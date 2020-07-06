@@ -28,7 +28,7 @@
 #define MAC_ADDR_LEN          20
 #define IP_ADDR_LEN              16
 #define MAXSIZE                 512
-#define BroadcastAddress  "224.0.0.88"
+#define BroadcastAddress  "224.0.0.0"
 #define PORT 8888
 #define  NET_CARD_NAME  "eno1" //网卡名称
 
@@ -124,7 +124,9 @@ int ssdp_discovery(void)
                                 }
                                 buf[length]='\0';
                                 printf("%s\n",buf);
-                                handle_discovery(buf, &client_addrin,client_len);
+                                strcpy(buf,"Server get your message");
+                                sendto(ssdp_sock,buf,strlen(buf),0,(struct sockaddr*)&client_addrin,client_len);           
+                                //handle_discovery(buf, &client_addrin,client_len);
                 }
 
                 return 0;  
@@ -146,6 +148,13 @@ int init_ssdp_sock(void)
                 } 
                 printf("ssdp_sock=%d\n",ssdp_sock);
 
+                 int opt = 1;
+                 if(setsockopt(ssdp_sock, SOL_SOCKET, SO_REUSEADDR, (const void *)&opt, sizeof(opt)) < 0)
+                {
+                                perror("fail to setsockopt");
+                                return -1;
+                }
+                
                 if(bind(ssdp_sock, (struct sockaddr *)&ssdp_addrin, sizeof(ssdp_addrin))<0) 
                  {
                                  perror("ssdp_sock bind"); 
@@ -177,6 +186,7 @@ int ssdp_notify(void)
 
                 memcpy(buf, &tmp, sizeof(struct Device_Msg));
                 printf("buf=%s\n",buf);
+                printf("buf=%s\n",buf);
 
                 return sendto(ssdp_sock,buf,strlen(buf),0,(struct sockaddr*)&ssdp_addrin,sizeof(ssdp_addrin));           
 
@@ -190,20 +200,19 @@ int main(int argc,char *argv[])
                                 return -1;
                 }
 
-                // if(init_ssdp_sock( )==  -1)
-                // {
-                //                 perror("init_ssdp_sock");
-                //                 return -1;
-                // }
+                if(init_ssdp_sock( )==  -1)
+                {
+                                perror("init_ssdp_sock");
+                                return -1;
+                }
 
               printf("ip=%s\nmac=%s\n",Local_Ipaddr,Local_Macaddr);
 
-//                 if((ret=ssdp_notify( ))== -1)
-//                 {
-//                                 perror("init_ssdp_sock\n");
-//                                 return -1;
-//                 }
-
+                if(ssdp_notify( )== -1)
+                {
+                                perror("ssdp_notify\n");
+                                return -1;
+                }
 
 //                if(ssdp_discovery()== -1)
 //                {
