@@ -4,19 +4,21 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += \
-    src/common/udp_multicast.c \
+    src/common/udp_client.c \
+    src/common/udp_server.c \
+    src/mw_ssdp_client.c \
     src/mw_ssdp_server.c \
-    src/udp_broadcast.c \
-    src/udp_broadcast.cpp
+    src/test.c \
 
 
 HEADERS += \
-    inc/cJSON.h \
     inc/common/cJSON.h \
-    inc/common/udp_multicast.h \
-    inc/mv_ssdp_client.h \
-    inc/mv_ssdp_server.h \
-    inc/server_implementation.h
+    inc/common/udp_client.h \
+    inc/common/udp_com.h \
+    inc/common/udp_server.h \
+    \ \
+    inc/mw_ssdp_client.h \
+    inc/mw_ssdp_server.h
 
 DISTFILES +=
 

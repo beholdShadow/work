@@ -1,4 +1,4 @@
-#include "../../inc/common/udp_multicast.h"
+#include "../../inc/common/udp_server.h"
 
 #define MAC_ADDR_LEN        20
 #define IP_ADDR_LEN         16
@@ -211,82 +211,40 @@ int32_t ssdp_quit(void)
     return 0;
 }
 
-int main(int argc,char *argv[])
-{
-    init_sigaction();
-
-    init_time ();
-
-    if(init_ssdp_sock( )==  -1)
-    {
-        perror("init_ssdp_sock");
-        return -1;
-    }
-
-    if(ssdp_notify( )== -1)
-    {
-        perror("ssdp_notify\n");
-        return -1;
-    }
-
-    while(1);
-
-    return 0;
-}
-//
 //解析查询的请求并及时响应
-// void  handle_discovery(unsigned char *recv_data, struct  sockaddr_in* clientaddr,socklen_t  addrlen)
-// {
-//                 struct Device_Msg  Request,Res;
-//                 char  buf[MAXSIZE]={0};
-
-//                 memcpy(&Request,recv_data,sizeof(struct Device_Msg));
-
-//                 if(Request.type == Discovery )
-//                 {
-//                                 memset(buf,0,sizeof(buf));
-
-//                                 Res.type=Response;
-//                                 strncpy(Res.ipaddr,Local_Ipaddr,sizeof(Local_Ipaddr));
-//                                 strncpy(Res.macaddr,Local_Macaddr,sizeof(Local_Macaddr));
-
-//                                 memcpy(buf, &Res, sizeof(struct Device_Msg));
-
-//                                 sendto(ssdp_sock,buf,strlen(buf),0,(struct sockaddr*)clientaddr,addrlen);
-//                 }
-//                 else
-//                 {
-//                                 printf("Other device notify  message\n");
-//                 }
+ char*  handle_discovery(unsigned char *recv_data)
+ {
+         char  buf[MAXSIZE]={0};
 
 
-// }
 
-//通过ssdp socket从组播地址接受client和其他的device的数据包
-// int ssdp_discovery(void)
-// {
-//                 struct  sockaddr_in   client_addrin;
-//                 socklen_t  client_len=sizeof(client_addrin);
+ }
 
-//                 char buf[MAXSIZE];
-//                 int length;
-//                 printf("ssdp_sock=%d\n",ssdp_sock);
-//                 while(1)
-//                 {
-//                                 memset(buf,0,sizeof(buf));
+//通过ssdp_socket从组播地址接受client的search请求的json数据包
+ int ssdp_discovery(void)
+ {
+         char *buf=(char *)malloc(MAXSIZE);
+         int length;
+         struct  sockaddr_in   client_addrin;
+         socklen_t  client_len=sizeof(client_addrin);
 
-//                                 length=recvfrom(ssdp_sock,buf,sizeof(buf),0,(struct sockaddr*)&client_addrin,&client_len);
-//                                 if(length == -1)
-//                                 {
-//                                                 perror("ssdp_sock recvfrom\n");
-//                                                 return -1;
-//                                 }
-//                                 buf[length]='\0';
-//                                 printf("%s\n",buf);
-//                                 strcpy(buf,"Server get your message");
-//                                 sendto(ssdp_sock,buf,strlen(buf),0,(struct sockaddr*)&client_addrin,client_len);
-//                                 //handle_discovery(buf, &client_addrin,client_len);
-//                 }
+         while(1)
+         {
+             memset(buf,0,sizeof(buf));
 
-//                 return 0;
-// }
+             length=recvfrom(ssdp_sock,buf,sizeof(buf),0,(struct sockaddr*)&client_addrin,&client_len);
+             if(length == -1)
+             {
+                     perror("recvfrom");
+                     return -1;
+             }
+             buf[length]='\0';
+
+             buf=handle_discovery(buf);
+
+             sendto(ssdp_sock,buf,strlen(buf),0,(struct sockaddr*)&client_addrin,client_len);
+
+         }
+
+         return 0;
+ }
