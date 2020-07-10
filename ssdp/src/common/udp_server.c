@@ -12,13 +12,11 @@ uv_loop_t* event_loop=NULL;
 uv_timer_t timer;
 uv_udp_t ssdp_socket;
 struct  sockaddr_in   ssdp_addrin;
-mw_server_cb_t server_stop_cb;
+mw_stop_cb_t server_stop_cb;
 
 void udp_server_start(mw_server_handle_t server_handle,uv_loop_t *loop)
 {
     event_loop=loop;
-
-    server_handle->ready_stop=0;
 
     parse_handle(server_handle);
 
@@ -73,7 +71,23 @@ char* set_device_mluticast_json(const char* pack_type)
 
 char* parse_mluticast_json(const char* data)
 {
-    cJSON *root;
+    char *str=NULL;
+
+    cJSON *root=cJSON_Parse(data);
+
+    cJSON *pack_type=cJSON_GetObjectItem(root,"pack_type");
+
+    if(strcmp(pack_type->valuestring,"SEARCH") == 0)
+    {
+        cJSON *request=cJSON_GetObjectItem(root,"request_device_type");
+
+        if( strcmp(request->valuestring,device_type) == 0 || strcmp(request->valuestring,"all") == 0)
+            str=set_device_mluticast_json("RESPONSE");
+    }
+
+    cJSON_Delete(root);
+
+    return str;
 }
 
 void parse_handle(mw_server_handle_t server_handle)
@@ -89,6 +103,7 @@ void parse_handle(mw_server_handle_t server_handle)
     server_stop_cb=server_handle->server_stop_cb;
 
 }
+
 int32_t get_address(char *ip_addr, char *mac_addr)
 {
         int32_t sock;
@@ -140,7 +155,7 @@ int32_t init_timer(void)
 
     uv_timer_init(event_loop, &timer);
 
-    uv_timer_start(&timer,ssdp_loop_send,1000,5000);
+    uv_timer_start(&timer,ssdp_loop_send,5000,5000);
 
 }
 
@@ -248,17 +263,6 @@ void ssdp_loop_send(uv_timer_t* handle)
 
 }
 
-void after_uv_udp_send(uv_udp_send_t* req, int status)
-{
-    free(req->data);
-
-    req->data=NULL;
-
-    free(req);
-
-    req=NULL;
-}
-
 void after_uv_udp_recv(uv_udp_t* handle,
                     ssize_t nread,
                     const uv_buf_t* buf,
@@ -267,7 +271,8 @@ void after_uv_udp_recv(uv_udp_t* handle,
 {
     char* data = buf->base;
     data[nread] ='\0';
-    printf("recv %s\n", data);
+
+    printf("recv json data:%s\n", data);
 
     uv_udp_send_t *req=malloc(sizeof(uv_udp_send_t));
 
@@ -278,6 +283,17 @@ void after_uv_udp_recv(uv_udp_t* handle,
 
         uv_udp_send(req, &ssdp_socket, &w_buf,1, &ssdp_addrin, after_uv_udp_send);
     }
+}
+
+void after_uv_udp_send(uv_udp_send_t* req, int status)
+{
+    free(req->data);
+
+    req->data=NULL;
+
+    free(req);
+
+    req=NULL;
 }
 
 void end_uv_udp_send(uv_udp_send_t* req, int status)
@@ -301,6 +317,8 @@ void end_uv_udp_send(uv_udp_send_t* req, int status)
     }
 
     uv_close((uv_handle_t *)&ssdp_socket,close_cb);
+
+    uv_close((uv_handle_t *)&timer,close_cb);
 
     server_stop_cb();
 

@@ -8,7 +8,7 @@ SOURCES += \
     src/common/udp_server.c \
     src/mw_ssdp_client.c \
     src/mw_ssdp_server.c \
-    src/test.c \
+    src/server_test.c
 
 
 HEADERS += \
@@ -16,7 +16,7 @@ HEADERS += \
     inc/common/udp_client.h \
     inc/common/udp_com.h \
     inc/common/udp_server.h \
-    \ \
+    inc/common/uv.h \
     inc/mw_ssdp_client.h \
     inc/mw_ssdp_server.h
 

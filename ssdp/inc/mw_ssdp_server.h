@@ -85,7 +85,7 @@ int32_t mw_server_set_info(mw_server_handle_t handle,
 * ======================================================================
 */
 int32_t mw_server_set_cb(mw_server_handle_t handle,
-                           mw_server_cb_t server_stop_cb);
+                           mw_stop_cb_t server_stop_cb);
 
 /*
 

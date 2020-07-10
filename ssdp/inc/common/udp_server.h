@@ -3,8 +3,6 @@
 
 #include "udp_com.h"
 
-typedef int32_t (*mw_server_cb_t)(void);
-
 struct server_handle
 {
     char *mw_multicast_ip;
@@ -15,9 +13,7 @@ struct server_handle
 
     char buf[512];
 
-    int ready_stop;
-
-    mw_server_cb_t server_stop_cb;
+    mw_stop_cb_t server_stop_cb;
 };
 
 typedef struct server_handle* mw_server_handle_t;
@@ -33,7 +29,7 @@ void udp_server_stop();
 char* set_device_mluticast_json(const char *pack_type);
 
 //通过JSON解析接受的组播消息
-void parse_device_mluticast_json(const char *data);
+char* parse_mluticast_json(const char *data);
 
 //解析mw_server_handle_t句柄，获取设备和组播的相关信息
 void parse_handle(mw_server_handle_t handle);

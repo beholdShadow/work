@@ -35,34 +35,27 @@ int32_t mw_server_handle_create(mw_server_handle_t *handle)
 
     (*handle)->mw_multicast_port=8888;
 
-    (*handle)->ready_stop=1;
-
     return 0;
 }
 
 void mw_server_handle_destory(mw_server_handle_t handle)
 {
-    if(handle->ready_stop == 1)
-    {
-        free(handle->mw_multicast_ip);
-        handle->mw_multicast_ip=NULL;
+    free(handle->mw_multicast_ip);
+    handle->mw_multicast_ip=NULL;
+    printf("handle->mw_multicast_ip free\n");
 
-        free(handle->mw_device_name);
-        handle->mw_device_name=NULL;
+    free(handle->mw_device_name);
+    handle->mw_device_name=NULL;
+    printf("handle->mw_device_name free\n");
 
-        free(handle->mw_device_type);
-        handle->mw_device_type=NULL;
+    free(handle->mw_device_type);
+    handle->mw_device_type=NULL;
+    printf("handle->mw_device_type free\n");
 
-        free(handle);
-        handle=NULL;
+    free(handle);
+    handle=NULL;
+    printf("handle free\n");
 
-    }
-    else
-    {
-        perror("there are still something to do on server, mw_server_handle_destory fail");
-    }
-
-    return;
 }
 
 int32_t mw_server_set_info(mw_server_handle_t handle,
@@ -84,7 +77,7 @@ int32_t mw_server_set_info(mw_server_handle_t handle,
         handle->mw_multicast_port=mw_mulitcast_port;
 }
 
-int32_t mw_server_set_cb(mw_server_handle_t handle,mw_server_cb_t server_stop_cb)
+int32_t mw_server_set_cb(mw_server_handle_t handle,mw_stop_cb_t server_stop_cb)
 {
     handle->server_stop_cb=server_stop_cb;
 }

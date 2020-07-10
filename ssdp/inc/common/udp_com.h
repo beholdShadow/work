@@ -26,4 +26,5 @@ struct info
 
 typedef struct info server_info_t;
 
+typedef int32_t (*mw_stop_cb_t)(void);
 #endif // UDP_COM_H

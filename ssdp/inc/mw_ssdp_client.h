@@ -18,12 +18,11 @@ struct client_handle
    char *mw_mulitcast_Ip;
    int32_t mw_mulitcast_port;
    char *mw_request_device_type;
-
-   p_client_callback_t server_online_cb;
-   p_client_callback_t server_offline_cb;
-   p_client_callback_t search_response_cb
+   mw_client_cb_t server_online_cb;
+   mw_client_cb_t server_offline_cb;
+   mw_client_cb_t search_response_cb;
+   mw_stop_cb_t client_stop_cb;
 };
-
 typedef struct cleint_handle* mw_client_handle_t;
 */
 
@@ -38,7 +37,7 @@ typedef struct cleint_handle* mw_client_handle_t;
 *   Return:        return  -1  if   error  else return  0
 * ======================================================================
 */
-int32_t mv_client_handle_create(mw_client_handle_t *handle);
+int32_t mw_client_handle_create(mw_client_handle_t *handle);
 
 /*
 * =====================================================================
@@ -51,7 +50,8 @@ int32_t mv_client_handle_create(mw_client_handle_t *handle);
 *   Return:       void
 * ======================================================================
 */
-void mv_client_handle_destory(mw_client_handle_t handle);
+void mw_client_handle_destory(mw_client_handle_t handle);
+
 /*
 * =====================================================================
 *   FunctionName: mw_client_set_info
@@ -67,7 +67,8 @@ void mv_client_handle_destory(mw_client_handle_t handle);
 */
 int32_t mw_client_set_info(mw_client_handle_t handle,
                            char *mw_mulitcast_Ip,
-                           int32_t mw_mulitcast_port
+                           int32_t mw_mulitcast_port,
+                           char *mw_request_device_type
                            );
 
 /*
@@ -82,9 +83,10 @@ int32_t mw_client_set_info(mw_client_handle_t handle,
 * ======================================================================
 */
 int32_t mw_client_set_callback(mw_client_handle_t handle,
-                           mw_cleint_cb_t server_online_cb,
-                           mw_cleint_cb_t server_offline_cb,
-                           mw_cleint_cb_t client_search_cb_
+                           mw_client_cb_t server_online_cb,
+                           mw_client_cb_t server_offline_cb,
+                           mw_client_cb_t client_search_cb,
+                           mw_stop_cb_t client_stop_cb
                            );
 
 /*
@@ -99,8 +101,7 @@ int32_t mw_client_set_callback(mw_client_handle_t handle,
 *   Return:        return  -1  if   error  else return  0
 * ======================================================================
 */
-
-int32_t mw_client_search(mw_client_handle_t handle,char *mw_request_device_type);
+int32_t mw_client_search(mw_client_handle_t handle);
 
 /*
 * ===========================================================================
@@ -113,7 +114,7 @@ int32_t mw_client_search(mw_client_handle_t handle,char *mw_request_device_type)
 *   Return:         return  -1  if   error  else return  0
 * ===========================================================================
 */
-int32_t mw_client_start(mw_client_handle_t handle);
+int32_t mw_client_start(mw_client_handle_t handle, uv_loop_t *loop);
 
 /*
 * ===========================================================================
