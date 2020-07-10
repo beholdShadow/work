@@ -19,8 +19,9 @@ struct client_handle
    int32_t mw_mulitcast_port;
    char *mw_request_device_type;
 
-   p_callback server_online_cb;
-   p_callback server_offline_cb;
+   p_client_callback_t server_online_cb;
+   p_client_callback_t server_offline_cb;
+   p_client_callback_t search_response_cb
 };
 
 typedef struct cleint_handle* mw_client_handle_t;
@@ -81,9 +82,9 @@ int32_t mw_client_set_info(mw_client_handle_t handle,
 * ======================================================================
 */
 int32_t mw_client_set_callback(mw_client_handle_t handle,
-                           p_callback server_online_cb,
-                           p_callback server_offline_cb,
-                           p_callback client_search_cb_
+                           mw_cleint_cb_t server_online_cb,
+                           mw_cleint_cb_t server_offline_cb,
+                           mw_cleint_cb_t client_search_cb_
                            );
 
 /*

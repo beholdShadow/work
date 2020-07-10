@@ -2,21 +2,18 @@
 #define UDP_COM_H
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
 #include <string.h>
-#include <errno.h>
-#include <signal.h>
-#include <sys/types.h>
-#include <sys/time.h>
-#include <sys/socket.h>
+#include <stdlib.h>
 #include<sys/ioctl.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
 #include <net/if.h>
 
+#include "uv.h"
 #include "cJSON.h"
+
+#define MAC_ADDR_LEN        20
+#define IP_ADDR_LEN         16
+#define MAXSIZE             512
+#define INFO_LEN           100
 
 struct info
 {
